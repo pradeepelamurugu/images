@@ -1,0 +1,25 @@
+2)Logestic Regression
+
+data.columns
+
+from sklearn.preprocessing import LabelEncoder,StandardScaler
+encode=LabelEncoder()
+data['Sex']=encode.fit_transform(data['Sex'])
+
+a=data[['PassengerId','Sex', 'Pclass', 'SibSp','Parch', 'Fare']]
+b=data['Survived']
+
+print(a.shape)
+print(b.shape)
+
+from sklearn.model_selection import train_test_split
+X_train,X_test,y_train,y_test=train_test_split(a,b,random_state=101,test_size=0.3)
+
+from sklearn.linear_model import LogisticRegression
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+mse = mean_squared_error(y_test, y_pred)
+print(f'The test MSE is {mse}')

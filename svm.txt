@@ -1,0 +1,73 @@
+3)SVM
+
+from sklearn.preprocessing import StandardScaler 
+from sklearn.decomposition import PCA 
+from sklearn.svm import SVC 
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.metrics import confusion_matrix, classification_report 
+import pandas as pd 
+import matplotlib.pyplot as plt 
+import seaborn as sns 
+import numpy as np 
+
+data = pd.read_csv('data.csv') 
+
+data.head()
+
+data[data.duplicated()].shape
+
+data.columns
+
+data.info()
+
+data.describe()
+
+data = data.iloc[:, 1:-1]
+variables = data.iloc[:, 1:]
+labels = data.iloc[:, 0]
+
+X=data
+Y=variables
+
+data.describe()
+
+data_visualization = data.iloc[:, [0, 1, 2, 3, 4, 14, 21, 22, 23, 24]]
+
+variables.skew()
+
+correlation = variables.corr('pearson')
+plt.figure(figsize=(25,25), dpi= 100, facecolor='w', edgecolor='k')
+ax = sns.heatmap(correlation.round(2), cmap='RdYlGn_r', linewidths=0.5, annot=True,
+                 cbar=True, square=True, fmt='0.2f')
+plt.yticks(rotation=0)
+ax.tick_params(labelbottom=False, labeltop=True)
+ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+plt.title('Correlation matrix')
+
+X = data.iloc[:, 1:].values
+Y = data.iloc[:, 0].values
+
+scaler = StandardScaler() 
+X_scaled = pd.DataFrame(scaler.fit_transform(X))
+X_scaled_drop = X_scaled.drop(X_scaled.columns[[2, 3, 12, 13, 22, 23]], axis=1) 
+
+pca = PCA(n_components=0.95) 
+x_pca = pca.fit_transform(X_scaled_drop)
+x_pca=pd.DataFrame(x_pca) 
+print("Before PCA, X dataframe shape = ",X.shape,"\nAfter PCA, x_pca dataframe shape = ",x_pca.shape) 
+
+print(pca.explained_variance_ratio_)
+print(pca.explained_variance_ratio_.sum()) 
+
+print(x_pca.shape)
+print(Y.shape) 
+
+X_train, X_test, Y_train, Y_test = train_test_split(x_pca, Y, test_size=0.25, random_state=0)
+svc = SVC()
+svc.fit(X_train,Y_train)
+y_pred =svc.predict(X_test) 
+
+cm = confusion_matrix(Y_test, y_pred) 
+print("Confusion matrix:\n",cm) 
+report = classification_report(Y_test, y_pred) 
+print("Classification report:\n",report) 

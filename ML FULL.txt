@@ -1,0 +1,396 @@
+1) Write a Program to implement Linear Regression (Scikit) involving single variable
+and multiple variables and analyze the house price prediction.
+
+SINGLE:
+
+import pandas as pd 
+import numpy as np 
+import matplotlib.pyplot as plt 
+import seaborn as sns
+
+data=pd.read_csv('train.csv')
+
+data['Age']=data['Age'].fillna(40)
+
+X= data['Age']
+
+y=data['Fare']
+
+from sklearn.model_selection import train_test_split
+X_train,X_test,y_train,y_test=train_test_split(X,y,random_state=101,test_size=0.3)
+
+from sklearn.linear_model import LinearRegression
+Linreg=LinearRegression()
+Linreg.fit(np.array(X_train).reshape(-1,1),y_train)
+y_pred=Linreg.predict(np.array(X_test).reshape(-1,1))
+
+from sklearn.metrics import mean_squared_error,r2_score
+print('MSE',mean_squared_error(y_test,y_pred))
+print('R2square',r2_score(y_test,y_pred))
+
+MULTIPLE:
+
+import pandas as pd 
+import numpy as np 
+import matplotlib.pyplot as plt 
+import seaborn as sns
+
+data=pd.read_csv('real_estate.csv')
+
+data.head()
+
+data.info()
+
+data.columns
+
+x=data[['X3 distance to the nearest MRT station']]
+y=data['Y house price of unit area']
+
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+from sklearn.linear_model import LinearRegression
+
+x_train, x_test, y_train, y_test = train_test_split(x,y,train_size=0.85,random_state=1)
+
+model =LinearRegression()
+model.fit(x_train, y_train)
+
+y_pred = model.predict(x_test)
+
+mse = mean_squared_error(y_test, y_pred)
+print(f'The test MSE is {mse}')
+
+
+2)Logestic Regression
+
+data.columns
+
+from sklearn.preprocessing import LabelEncoder,StandardScaler
+encode=LabelEncoder()
+data['Sex']=encode.fit_transform(data['Sex'])
+
+a=data[['PassengerId','Sex', 'Pclass', 'SibSp','Parch', 'Fare']]
+b=data['Survived']
+
+print(a.shape)
+print(b.shape)
+
+from sklearn.model_selection import train_test_split
+X_train,X_test,y_train,y_test=train_test_split(a,b,random_state=101,test_size=0.3)
+
+from sklearn.linear_model import LogisticRegression
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+mse = mean_squared_error(y_test, y_pred)
+print(f'The test MSE is {mse}')
+
+3)SVM
+
+from sklearn.preprocessing import StandardScaler 
+from sklearn.decomposition import PCA 
+from sklearn.svm import SVC 
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.metrics import confusion_matrix, classification_report 
+import pandas as pd 
+import matplotlib.pyplot as plt 
+import seaborn as sns 
+import numpy as np 
+
+data = pd.read_csv('data.csv') 
+
+data.head()
+
+data[data.duplicated()].shape
+
+data.columns
+
+data.info()
+
+data.describe()
+
+data = data.iloc[:, 1:-1]
+variables = data.iloc[:, 1:]
+labels = data.iloc[:, 0]
+
+X=data
+Y=variables
+
+data.describe()
+
+data_visualization = data.iloc[:, [0, 1, 2, 3, 4, 14, 21, 22, 23, 24]]
+
+variables.skew()
+
+correlation = variables.corr('pearson')
+plt.figure(figsize=(25,25), dpi= 100, facecolor='w', edgecolor='k')
+ax = sns.heatmap(correlation.round(2), cmap='RdYlGn_r', linewidths=0.5, annot=True,
+                 cbar=True, square=True, fmt='0.2f')
+plt.yticks(rotation=0)
+ax.tick_params(labelbottom=False, labeltop=True)
+ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+plt.title('Correlation matrix')
+
+X = data.iloc[:, 1:].values
+Y = data.iloc[:, 0].values
+
+scaler = StandardScaler() 
+X_scaled = pd.DataFrame(scaler.fit_transform(X))
+X_scaled_drop = X_scaled.drop(X_scaled.columns[[2, 3, 12, 13, 22, 23]], axis=1) 
+
+pca = PCA(n_components=0.95) 
+x_pca = pca.fit_transform(X_scaled_drop)
+x_pca=pd.DataFrame(x_pca) 
+print("Before PCA, X dataframe shape = ",X.shape,"\nAfter PCA, x_pca dataframe shape = ",x_pca.shape) 
+
+print(pca.explained_variance_ratio_)
+print(pca.explained_variance_ratio_.sum()) 
+
+print(x_pca.shape)
+print(Y.shape) 
+
+X_train, X_test, Y_train, Y_test = train_test_split(x_pca, Y, test_size=0.25, random_state=0)
+svc = SVC()
+svc.fit(X_train,Y_train)
+y_pred =svc.predict(X_test) 
+
+cm = confusion_matrix(Y_test, y_pred) 
+print("Confusion matrix:\n",cm) 
+report = classification_report(Y_test, y_pred) 
+print("Classification report:\n",report) 
+
+4)KNN
+
+%matplotlib inline
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.datasets import load_iris
+iris= load_iris()
+
+type(iris)
+
+iris.data
+
+print(iris.feature_names)
+
+print(iris.target)
+
+print(iris.target_names)
+
+plt.scatter(iris.data[:,0],iris.data[:,1],c=iris.target, cmap=plt.cm.Paired)
+plt.xlabel(iris.feature_names[0])
+plt.ylabel(iris.feature_names[1])
+plt.show()
+
+plt.scatter(iris.data[:,2],iris.data[:,3],c=iris.target, cmap=plt.cm.Paired)
+plt.xlabel(iris.feature_names[2])
+plt.ylabel(iris.feature_names[3])
+plt.show()
+
+p = iris.data
+q = iris.target
+data = np.c_[iris.data, iris.target]
+columns = np.append(iris.feature_names,["target"])
+df = pd.DataFrame(data,columns=columns)
+print(df)
+
+df[iris.feature_names].describe()
+
+sns.heatmap(df[iris.feature_names].corr(),annot=True)
+plt.plot()
+
+sns.boxplot(x="target",y="petal length (cm)",data=df)
+
+sns.boxplot(x="target",y="petal width (cm)",data=df)
+
+sns.stripplot(x="target", y="petal length (cm)", data=df, jitter=True, edgecolor="gray")
+
+sns.pairplot(df, hue="target", size=4)
+
+from sklearn.model_selection import train_test_split
+p_train,p_test,q_train,q_test = train_test_split(p,q,test_size=0.2,random_state=4)
+print(p_train.shape)
+print(p_test.shape)
+print(q_train.shape)
+print(q_test.shape)
+
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn import metrics
+
+k_range = range(1,26)
+scores_list = []
+for k in k_range:
+        knn = KNeighborsClassifier(n_neighbors=k)
+        knn.fit(p_train,q_train)
+        q_pred=knn.predict(p_test)
+        scores_list.append(metrics.accuracy_score(q_test,q_pred))
+
+plt.plot(k_range,scores_list)
+plt.xlabel('k value for KNN')
+plt.ylabel('Accuracy on dataset')
+
+from sklearn.model_selection import cross_val_score
+scores={}
+cv_scores=[]
+for k in k_range:
+  knn=KNeighborsClassifier(n_neighbors=k)
+  scores[k]=cross_val_score(knn,p_train,q_train,cv=10,scoring='accuracy').mean()
+  cv_scores.append(scores[k])
+MSE= [1-x for x in cv_scores]
+
+plt.title('The optimal number of neighbors')
+plt.xlabel('Number of neighbors K')
+plt.ylabel('Misclassification error')
+plt.plot(k_range, MSE)
+plt.show()
+
+maximum = max(scores, key=scores.get)
+print("Maximum value:",maximum)
+
+knn = KNeighborsClassifier(n_neighbors=12)
+knn.fit(p_train,q_train)
+y_pred = knn.predict(p_test)
+metrics.confusion_matrix(q_test,y_pred)
+metrics.accuracy_score(q_test,y_pred)
+
+5)Naive Bayes
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+df = pd.read_csv("/content/country_wise_latest.csv")
+df.head()
+
+print(df.info())
+df.describe()
+
+from sklearn.preprocessing import LabelEncoder,StandardScaler
+encode = LabelEncoder()
+
+df.columns
+df=df.drop(labels=['Deaths / 100 Recovered'], axis=1)
+
+df['Country/Region']=encode.fit_transform(df['Country/Region'])
+df['WHO Region']=encode.fit_transform(df['WHO Region'])
+
+df
+
+X = df.drop(columns = ['New deaths'])
+y = df['New deaths']
+
+x_train,x_test,y_train,y_test = train_test_split(X,y, test_size= 0.25,random_state=355)
+
+from sklearn.naive_bayes import GaussianNB
+model = GaussianNB()
+model.fit(x_train,y_train)
+y_pred = model.predict(x_test)
+print(accuracy_score(y_test, y_pred))
+
+
+6)Implement the non-parametric Locally Weighted Regression algorithm in order to fit
+data points. Select appropriate data set for your experiment and draw graphs
+
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+def kernel(point, xmat, k):
+   m,n = np.shape(xmat)
+   weights = np.mat(np.eye((m)))
+   for j in range(m):
+     diff = point - X[j]
+     weights[j,j] = np.exp(diff*diff.T/(-2.0*k**2))
+   return weights
+def localWeight(point, xmat, ymat, k):
+   wei = kernel(point,xmat,k)
+   W = (X.T*(wei*X)).I*(X.T*(wei*ymat.T))
+   return W
+def localWeightRegression(xmat, ymat, k):
+  m,n = np.shape(xmat)
+  ypred = np.zeros(m)
+  for i in range(m):
+    ypred[i] = xmat[i]*localWeight(xmat[i],xmat,ymat,k)
+  return ypred
+data = pd.read_csv('ex8.csv')
+bill = np.array(data.total_bill)
+tip = np.array(data.tip)
+mbill = np.mat(bill)
+mtip = np.mat(tip)
+m= np.shape(mbill)[1]
+one = np.mat(np.ones(m))
+X = np.hstack((one.T,mbill.T))
+ypred = localWeightRegression(X,mtip,0.5)
+SortIndex = X[:,1].argsort(0)
+xsort = X[SortIndex][:,0]
+fig = plt.figure()
+ax = fig.add_subplot(1,1,1)
+ax.scatter(bill,tip, color='green')
+ax.plot(xsort[:,1],ypred[SortIndex], color = 'red', linewidth=5)
+plt.xlabel('Total bill')
+plt.ylabel('Tip')
+plt.show();
+
+KMEANS
+
+# Commented out IPython magic to ensure Python compatibility.
+from sklearn.cluster import KMeans
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+from matplotlib import pyplot as plt
+from sklearn.preprocessing import LabelEncoder
+# %matplotlib inline
+
+data=pd.read_csv('adult.csv')
+
+data.head(10)
+
+data.columns
+
+plt.scatter(data.Age,data['Income'])
+plt.xlabel('Age')
+plt.ylabel('Income')
+
+km=KMeans(n_clusters=3)
+
+y_predicted = km.fit_predict(data[['Age','Income']])
+y_predicted
+
+y_predicted
+
+data['cluster']=y_predicted
+data.head()
+
+data['cluster']=y_predicted
+data.head(10)
+
+km.cluster_centers_
+
+df1 = data[data.cluster==0]
+df2 = data[data.cluster==1]
+df3 = data[data.cluster==2]
+plt.scatter(df1.Age,df1['Income'],color='green')
+plt.scatter(df2.Age,df2['Income'],color='red')
+plt.scatter(df3.Age,df3['Income'],color='black')
+plt.scatter(km.cluster_centers_[:,0],km.cluster_centers_[:,1],color='purple',marker='*',label='centroid')
+plt.xlabel('Age')
+plt.ylabel('Income')
+plt.legend()
+
+data.columns
+
+sse = []
+k_rng = range(1,10)
+for k in k_rng:
+    km = KMeans(n_clusters=k)
+    km.fit(data[['Age','Income']])
+    sse.append(km.inertia_)
+
+plt.xlabel('K')
+plt.ylabel('Sum of squared error')
+plt.plot(k_rng,sse)
+
